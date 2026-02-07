@@ -32,6 +32,5 @@ if not BOT_TOKEN:
     LOGGER.error("No BOT_TOKEN token provided!")
     exit(1)
 OWNER_ID = int(getenv("OWNER_ID", "0"))
-REMOVE_TAG = getenv("REMOVE_TAG", "False") in {"true", "True", 1}
 
 bot = ApplicationBuilder().token(BOT_TOKEN).build()

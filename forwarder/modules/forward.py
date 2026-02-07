@@ -5,16 +5,14 @@ from telegram import Update, Message, MessageId
 from telegram.error import ChatMigrated, RetryAfter
 from telegram.ext import MessageHandler, filters, ContextTypes
 
-from forwarder import bot, REMOVE_TAG, LOGGER
+from forwarder import bot, LOGGER
 from forwarder.utils import get_destination, get_config, predicate_text
 
 
 async def send_message(
     message: Message, chat_id: int, thread_id: Optional[int] = None
 ) -> Union[MessageId, Message]:
-    if REMOVE_TAG:
-        return await message.copy(chat_id, message_thread_id=thread_id)  # type: ignore
-    return await message.forward(chat_id, message_thread_id=thread_id)  # type: ignore
+    return await message.copy(chat_id, caption="", message_thread_id=thread_id)  # type: ignore
 
 
 async def forwarder(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
@@ -55,7 +53,8 @@ async def forwarder(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
 FORWARD_HANDLER = MessageHandler(
     filters.Chat([config.source.get_id() for config in get_config()])
     & ~filters.COMMAND
-    & ~filters.StatusUpdate.ALL,
+    & ~filters.StatusUpdate.ALL
+    & ~filters.TEXT,
     forwarder,
 )
 bot.add_handler(FORWARD_HANDLER)
